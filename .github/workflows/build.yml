@@ -24,7 +24,8 @@ jobs:
 
     - name: Install Dependencies
       run: |
-        carthage bootstrap --platform iOS --cache-builds --use-ssh=false
+        git config --global url."https://".insteadOf git://
+        carthage bootstrap --platform iOS --cache-builds
 
     - name: Build for Testing with Custom Bundle ID
       run: |
