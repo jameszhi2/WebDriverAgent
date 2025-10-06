@@ -1,4 +1,4 @@
-github "facebook/WebDriverAgent/Carthage/CommandCruncher"
+github "facebook/CommandCruncher"
 github "CocoaLumberjack/CocoaLumberjack" "3.7.0"
 github "facebook/Flipper" "0.119.0"
 github "facebook/Flipper-NetworkPlugin" "0.119.0"
