@@ -33,7 +33,10 @@ jobs:
           -derivedDataPath DerivedData \
           CODE_SIGN_IDENTITY="" \
           CODE_SIGNING_REQUIRED=NO \
-          CODE_SIGNING_ALLOWED=NO
+          CODE_SIGNING_ALLOWED=NO \
+          DEBUG_INFORMATION_FORMAT=dwarf \
+          GCC_SYMBOLS=NO \
+          PRODUCT_BUNDLE_IDENTIFIER=com.ruliang.WebDriverAgentRunner
 
     - name: Create IPA
       run: |
