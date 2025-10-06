@@ -18,10 +18,14 @@ jobs:
       with:
         xcode-version: '15.2'
 
-    - name: Install Dependencies
+    - name: Install Carthage
+      run: |
+        brew install carthage || brew upgrade carthage
+
+    - name: Bootstrap Carthage Dependencies
       run: |
         mkdir -p Resources
-        ./Scripts/bootstrap.sh -d
+        carthage bootstrap --platform iOS --cache-builds
 
     - name: Build for Testing with Custom Bundle ID
       run: |
@@ -36,18 +40,4 @@ jobs:
           CODE_SIGNING_ALLOWED=NO \
           DEBUG_INFORMATION_FORMAT=dwarf \
           GCC_SYMBOLS=NO \
-          PRODUCT_BUNDLE_IDENTIFIER=com.ruliang.WebDriverAgentRunner
-
-    - name: Create IPA
-      run: |
-        cd DerivedData/Build/Products/Release-iphonesimulator
-        mkdir -p Payload
-        cp -r WebDriverAgentRunner-Runner.app Payload/
-        zip -r WebDriverAgentRunner-Runner.ipa Payload/
-
-    - name: Upload IPA
-      uses: actions/upload-artifact@v4
-      with:
-        path: DerivedData/Build/Products/Release-iphonesimulator/*.ipa
-        if-no-files-found: error
-        name: WDA-iOS-Simulator-IPA
+          PRODUCT_BUNDLE_IDENTIFIER=com.ruliang.WebDriverAgent
