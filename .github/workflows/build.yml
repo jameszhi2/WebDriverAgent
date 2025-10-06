@@ -23,18 +23,20 @@ jobs:
         brew install carthage || brew upgrade carthage
 
     - name: Install Dependencies
+      env:
+        # 将 GITHUB_TOKEN 暴露为环境变量（Carthage 可能需要）
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        # 强制使用 HTTPS
+        # 1. 创建 .netrc 文件，让 Git 自动使用 token
         git config --global url."https://github.com/".insteadOf git://github.com/
         git config --global url."https://".insteadOf git://
-        
-        # 设置 Git 不验证 SSL（GitHub Actions 中安全）
         git config --global http.sslVerify false
-        
-        # 关键：使用 GitHub Token 绕过限流（可选，但推荐）
-        git config --global url."https://${{ secrets.GITHUB_TOKEN }}@github.com/".insteadOf "https://github.com/"
-        
-        # 开始安装依赖
+    
+        # 创建 .netrc 文件，自动认证
+        echo "machine github.com login $GITHUB_TOKEN" > ~/.netrc
+        echo "machine api.github.com login $GITHUB_TOKEN" >> ~/.netrc
+    
+        # 2. 开始安装依赖
         carthage bootstrap --platform iOS --cache-builds --use-netrc
 
     - name: Build for Testing with Custom Bundle ID
