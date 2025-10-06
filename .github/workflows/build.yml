@@ -1,36 +1,36 @@
-name: Build WDA IPA
+name: Build WebDriverAgent IPA
 
 on:
   push:
-    branches: [ master, main ]
+    branches: [ main, master ]
   workflow_dispatch:
 
 jobs:
-  build:
+  build-wda:
     runs-on: macos-13
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v3
+    - name: Checkout Code
+      uses: actions/checkout@v4
 
-    - name: Set up Xcode
+    - name: Setup Xcode 15.3
       uses: maxim-lobanov/setup-xcode@v1
       with:
-        xcode-version: 15.3
+        xcode-version: '15.3'
 
-    - name: Install dependencies
+    - name: Install Dependencies
       run: |
         mkdir -p Resources
         ./Scripts/bootstrap.sh -d
 
-    - name: Build for Testing
+    - name: Build for Testing with Custom Bundle ID
       run: |
         xcodebuild build-for-testing \
           -project WebDriverAgent.xcodeproj \
           -scheme WebDriverAgentRunner \
           -destination 'platform=iOS Simulator,name=iPhone 14,OS=16.2' \
           -configuration Release \
-          -derivedDataPath DerivedData \
+          -derivedDataPath ./DerivedData \
           CODE_SIGN_IDENTITY="" \
           CODE_SIGNING_REQUIRED=NO \
           CODE_SIGNING_ALLOWED=NO \
@@ -41,12 +41,13 @@ jobs:
     - name: Create IPA
       run: |
         cd DerivedData/Build/Products/Release-iphonesimulator
-        mkdir Payload
+        mkdir -p Payload
         cp -r WebDriverAgentRunner-Runner.app Payload/
-        zip -r WebDriverAgentRunner-Runner.ipa Payload
+        zip -r WebDriverAgentRunner-Runner.ipa Payload/
 
     - name: Upload IPA
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         path: DerivedData/Build/Products/Release-iphonesimulator/*.ipa
         if-no-files-found: error
+        name: WDA-iOS-Simulator-IPA
